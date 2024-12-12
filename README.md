@@ -1,3 +1,43 @@
+## Table des matières
+
+1. [Prérequis](#prérequis)
+2. [Installation des dépendances](#installation-des-dépendances)
+   1. [Initialisation du programme Mbed](#1-initialisation-du-programme-mbed)
+   2. [Ajout des bibliothèques nécessaires](#2-ajout-des-bibliothèques-nécessaires)
+   3. [Mise à jour des sous-modules Mbed](#3-mise-à-jour-des-sous-modules-mbed)
+   4. [Création et activation d'un environnement virtuel Python](#4-création-et-activation-dun-environnement-virtuel-python)
+3. [Compilation et flash](#compilation-et-flash)
+   1. [Configurer la cible et l'outil de compilation](#1-configurer-la-cible-et-loutil-de-compilation)
+   2. [Compiler le programme](#2-compiler-le-programme)
+   3. [Flasher le programme](#3-flasher-le-programme)
+4. [Capteur - Projet IoT embarqué](#capteur---projet-iot-embarqué)
+   1. [Organisation des fichiers](#organisation-des-fichiers)
+5. [Nouvelle stratégie pour les exercices](#nouvelle-stratégie-pour-les-exercices)
+   1. [Exemple d'utilisation](#exemple-dutilisation)
+6. [Exercices pratiques](#exercices-pratiques)
+   1. [Exercice 1 : Contrôle d'une LED avec interruption](#exercice-1--contrôle-dune-led-avec-interruption)
+   2. [Exercice 2 : Mesure du temps d'appui sur un bouton](#exercice-2--mesure-du-temps-dappui-sur-un-bouton)
+   3. [Exercice 3 : Modification de la fréquence de clignotement](#exercice-3--modification-de-la-fréquence-de-clignotement)
+   4. [Exercice 4 : Gestion de threads avec mutex](#exercice-4--gestion-de-threads-avec-mutex)
+7. [Projet principal : Lecture du DustSensor et intégration LoRaWAN](#projet-principal--lecture-du-dustsensor-et-intégration-lorawan)
+   1. [Prototype initial](#1-prototype-initial)
+   2. [Test avec drivers existants](#2-test-avec-drivers-existants)
+   3. [Création d'un wrapper](#3-création-dun-wrapper)
+      1. [Initialisation du capteur](#initialisation-du-capteur)
+      2. [Lecture des données](#lecture-des-données)
+      3. [Fonctionnement global](#fonctionnement-global)
+   4. [Intégration LoRaWAN](#4-intégration-lorawan)
+      1. [Transmission des données](#transmission-des-données)
+      2. [Réception des messages](#réception-des-messages)
+      3. [Gestion des événements](#gestion-des-événements)
+   5. [Résultats obtenus](#5-résultats-obtenus)
+8. [Visualisation sur Thingsboard](#visualisation-sur-thingsboard)
+   1. [Fonctionnalités](#fonctionnalités)
+   2. [Résultats visuels](#résultats-visuels)
+   3. [Fichiers de configuration](#fichiers-de-configuration)
+9. [Conclusion](#conclusion)
+
+
 ## Capteur - Projet IoT embarqué
 
 Ce projet utilise le framework Mbed OS pour le développement d'une application IoT avec la carte ZEST_CORE_FMLR-72. L'application intègre des fonctionnalités de capteur et de communication LoRaWAN, ainsi qu'une visualisation sur le tableau de bord Thingsboard.
@@ -219,6 +259,8 @@ Cet exercice implémente un système de "Ping-Pong" entre deux threads en utilis
 
 Chaque exercice est décrit avec un code commenté dans `main.txt` et peut être facilement extrait pour être exécuté indépendamment.
 
+---
+
 ## Projet principal : Lecture du DustSensor et intégration LoRaWAN
 
 ### Étapes de développement
@@ -282,6 +324,17 @@ bool DustSensor::read(uint16_t &pm1_0, uint16_t &pm2_5, uint16_t &pm4_0, uint16_
 }
 ```
 
+#### Fonctionnement
+
+1. **Initialisation** :
+   - Le capteur est configuré pour arrêter toute mesure ou autosend en cours pour éviter les conflits.
+   - Un coefficient d'ajustement est défini à `200` pour calibrer les mesures.
+   - Une vérification est effectuée pour confirmer que le paramètre est accepté.
+
+2. **Lecture des données** :
+   - Les valeurs brutes pour PM1.0, PM2.5, PM4.0, et PM10 sont assignées directement aux variables en sortie.
+   - Les erreurs sont gérées pour garantir que seules les lectures valides sont utilisées.
+
 #### 4. Intégration LoRaWAN
 
 Le projet a ensuite été étendu pour transmettre les données mesurées au réseau LoRaWAN. Les étapes principales incluent :
@@ -294,10 +347,10 @@ Le projet a ensuite été étendu pour transmettre les données mesurées au ré
    - Elles sont ensuite transmises via `lorawan.send()`.
 
 2. **Réception des messages** :
-   - Le système est capable de recevoir des commandes ou des données depuis le serveur LoRaWAN à l'aide de `lorawan.receive()`.
+   - Le système peut recevoir des commandes depuis le serveur LoRaWAN à l'aide de `lorawan.receive()`.
 
 3. **Gestion des événements** :
-   - Un gestionnaire d'événements (`lora_event_handler`) est utilisé pour réagir aux différents états du réseau, comme la réussite de la connexion ou l'échec de la transmission.
+   - Un gestionnaire d'événements (`lora_event_handler`) réagit aux différents états du réseau.
 
 #### 5. Résultats obtenus
 
@@ -305,7 +358,25 @@ Avec cette structure, les données mesurées sont transmises avec succès au tab
 
 ---
 
+## Visualisation sur Thingsboard
+
+### Fonctionnalités
+
+- **Graphiques en temps réel** des particules PM1.0, PM2.5, PM4.0, et PM10.
+- **Historique des données** pour une analyse approfondie.
+- **Alertes configurables** en fonction des seuils de pollution.
+
+### Résultats visuels
+
+- Avant : Capture d'écran des niveaux bas de particules (voir `before_breath.jpg`).
+- Après : Souffler sur le capteur montre une augmentation notable des valeurs (voir `after_breath.jpg`).
+
+### Fichiers de configuration
+
+Les fichiers nécessaires à la connexion de votre appareil à Thingsboard, ainsi qu'un guide d'installation, sont disponibles dans le dossier `thingboard/`.
+
+---
+
 ## Conclusion
 
-Ce projet combine des exercices pratiques pour une meilleure compréhension de Mbed OS et une application complète utilisant des capteurs de particules et LoRaWAN. La centralisation des exercices dans `main.txt` et l'utilisation d'un wrapper pour le capteur HPMA115 rendent le code plus lisible, modulaire et adapté à des extensions futures, comme l'intégration avec d'autres types de capteurs ou de protocoles de communication.
-
+Ce projet combine des exercices pratiques pour une meilleure compréhension de Mbed OS et une application complète utilisant des capteurs de particules et LoRaWAN. La centralisation des exercices dans `main.txt` et l'utilisation d'un wrapper pour le capteur HPMA115 rendent le code plus lisible, modulaire et adaptable à des extensions futures, comme l'intégration avec d'autres capteurs ou protocoles.
