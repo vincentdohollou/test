@@ -34,7 +34,6 @@
 8. [Visualisation sur Thingsboard](#visualisation-sur-thingsboard)
    1. [Fonctionnalités](#fonctionnalités)
    2. [Résultats visuels](#résultats-visuels)
-   3. [Fichiers de configuration](#fichiers-de-configuration)
 9. [Conclusion](#conclusion)
 
 
