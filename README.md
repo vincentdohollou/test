@@ -362,18 +362,17 @@ Avec cette structure, les données mesurées sont transmises avec succès au tab
 
 ### Fonctionnalités
 
-- **Graphiques en temps réel** des particules PM1.0, PM2.5, PM4.0, et PM10.
-- **Historique des données** pour une analyse approfondie.
-- **Alertes configurables** en fonction des seuils de pollution.
+- **Graphiques en temps réel** des particules PM1.0, PM2.5, PM4.0, et PM10, affichés sur le tableau de bord Thingsboard.
+- **Surveillance en continu** : Les données sont mises à jour toutes les 5 secondes pour refléter l'état actuel des particules mesurées.
+- **Personnalisation visuelle** : Les widgets Thingsboard permettent de visualiser clairement chaque type de particule dans un environnement interactif.
 
 ### Résultats visuels
 
-- Avant : Capture d'écran des niveaux bas de particules (voir `before_breath.jpg`).
-- Après : Souffler sur le capteur montre une augmentation notable des valeurs (voir `after_breath.jpg`).
+L'image ci-dessous montre l'affichage des données sur Thingsboard. Ces valeurs reflètent les particules mesurées en temps réel par le capteur HPMA115 et transmises via LoRaWAN :
 
-### Fichiers de configuration
+![Visualisation des données sur Thingsboard](Thingsboard_visu.png)
 
-Les fichiers nécessaires à la connexion de votre appareil à Thingsboard, ainsi qu'un guide d'installation, sont disponibles dans le dossier `thingboard/`.
+Les graphiques montrent les niveaux des particules PM1.0, PM2.5, PM4.0, et PM10 sur une période donnée.
 
 ---
 
