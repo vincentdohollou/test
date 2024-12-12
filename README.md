@@ -218,3 +218,94 @@ Cet exercice implémente un système de "Ping-Pong" entre deux threads en utilis
 ---
 
 Chaque exercice est décrit avec un code commenté dans `main.txt` et peut être facilement extrait pour être exécuté indépendamment.
+
+## Projet principal : Lecture du DustSensor et intégration LoRaWAN
+
+### Étapes de développement
+
+#### 1. Prototype initial
+
+Le code initial pour lire les données de particules du capteur HPMA115 a été développé et testé. Ce code, inclus dans `main.txt`, utilise des fonctions simples pour initialiser le capteur et lire les données mesurées (PM1.0, PM2.5, PM4.0, PM10). Voici un extrait du code :
+
+```cpp
+if (!sensor.initialize()) {
+    printf("Failed to initialize sensor.\n");
+    return -1;
+}
+
+if (sensor.read(pm1_0, pm2_5, pm4_0, pm10)) {
+    printf("PM1.0: %d µg/m³\n", pm1_0);
+} else {
+    printf("Failed to read data from sensor.\n");
+}
+```
+
+#### 2. Test avec drivers existants
+
+Pour valider les résultats, les fichiers de drivers originaux pour le HPMA115 ont été récupérés depuis le dépôt GitHub [mbed_honeywell-hpma115](https://github.com/catie-aq/mbed_honeywell-hpma115). Ces drivers fournissent une implémentation fiable pour la communication avec le capteur via UART.
+
+#### 3. Création d'un wrapper
+
+Un wrapper a été développé pour encapsuler les fonctionnalités des drivers HPMA115, simplifiant leur utilisation dans le code principal. Voici les principales fonctionnalités :
+
+- **Initialisation du capteur** :
+```cpp
+bool DustSensor::initialize() {
+    if (sensor.stop_measurement() != HPMA115::ErrorType::Ok) return false;
+    if (sensor.stop_autosend() != HPMA115::ErrorType::Ok) return false;
+    if (sensor.set_adjust_coef(200) != HPMA115::ErrorType::Ok) return false;
+
+    uint8_t coef;
+    if (sensor.read_adjust_coef(&coef) != HPMA115::ErrorType::Ok || coef != 200) {
+        return false;
+    }
+
+    return sensor.start_measurement() == HPMA115::ErrorType::Ok;
+}
+```
+
+- **Lecture des données** :
+```cpp
+bool DustSensor::read(uint16_t &pm1_0, uint16_t &pm2_5, uint16_t &pm4_0, uint16_t &pm10) {
+    hpma115_data_t data;
+
+    if (sensor.read_measurement(&data) != HPMA115::ErrorType::Ok) {
+        return false;
+    }
+
+    pm1_0 = data.pm1_0;
+    pm2_5 = data.pm2_5;
+    pm4_0 = data.pm4_0;
+    pm10 = data.pm10;
+
+    return true;
+}
+```
+
+#### 4. Intégration LoRaWAN
+
+Le projet a ensuite été étendu pour transmettre les données mesurées au réseau LoRaWAN. Les étapes principales incluent :
+
+1. **Transmission des données** :
+   - Les données de particules sont encapsulées dans une chaîne JSON :
+   ```cpp
+   sprintf(payload, "{\"pm1_0\": %d, \"pm2_5\": %d, \"pm4_0\": %d, \"pm10\": %d}", pm1_0, pm2_5, pm4_0, pm10);
+   ```
+   - Elles sont ensuite transmises via `lorawan.send()`.
+
+2. **Réception des messages** :
+   - Le système est capable de recevoir des commandes ou des données depuis le serveur LoRaWAN à l'aide de `lorawan.receive()`.
+
+3. **Gestion des événements** :
+   - Un gestionnaire d'événements (`lora_event_handler`) est utilisé pour réagir aux différents états du réseau, comme la réussite de la connexion ou l'échec de la transmission.
+
+#### 5. Résultats obtenus
+
+Avec cette structure, les données mesurées sont transmises avec succès au tableau de bord Thingsboard pour une visualisation en temps réel. Les tests ont confirmé la fiabilité des résultats, et le code a été finalisé pour inclure ces fonctionnalités.
+
+---
+
+## Conclusion
+
+Ce projet combine des exercices pratiques pour une meilleure compréhension de Mbed OS et une application complète utilisant des capteurs de particules et LoRaWAN. La centralisation des exercices dans `main.txt` et l'utilisation d'un wrapper pour le capteur HPMA115 rendent le code plus lisible, modulaire et adapté à des extensions futures, comme l'intégration avec d'autres types de capteurs ou de protocoles de communication.
+
