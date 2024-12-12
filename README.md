@@ -369,7 +369,7 @@ Avec cette structure, les données mesurées sont transmises avec succès au tab
 
 L'image ci-dessous montre l'affichage des données sur Thingsboard. Ces valeurs reflètent les particules mesurées en temps réel par le capteur HPMA115 et transmises via LoRaWAN :
 
-![Visualisation des données sur Thingsboard](Thingsboard_visu.png)
+
 
 Les graphiques montrent les niveaux des particules PM1.0, PM2.5, PM4.0, et PM10 sur une période donnée.
 
